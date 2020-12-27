@@ -6,6 +6,11 @@ public class Conta {
     private String password;
 
 
+    Conta(){
+        nome="";
+        password="";
+    }
+
     public Conta(String nome, String password) {
         this.nome = nome;
         this.password = password;

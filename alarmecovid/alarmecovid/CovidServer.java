@@ -32,8 +32,6 @@ public class CovidServer {
                             String username = dis.readUTF();
                             String password = dis.readUTF();
                             covid.registo(username,password);
-                            dos.write(covid.getContas().getContas().get(username).getNome().getBytes());
-                            dos.write(covid.getContas().getContas().get(username).getPassword().getBytes());
                             dos.flush();
                             break;
 

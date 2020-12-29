@@ -16,7 +16,6 @@ public class CovidCliente {
         AlarmeCovid covid = new CovidStub();
 
         covid.registo("userteste","password");
-
-        covid.getContas();
+        
     }
 }

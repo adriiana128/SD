@@ -1,6 +1,7 @@
 package alarmecovid;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Contas {
@@ -62,6 +63,10 @@ public class Contas {
                 lock.unlock();
             }
             return null;
+        }
+
+        Map<String, Conta> getContas(){
+            return this.clientes;
         }
 
 }

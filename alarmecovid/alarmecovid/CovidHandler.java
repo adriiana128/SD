@@ -27,19 +27,18 @@ public class CovidHandler extends Thread {
         while (true) {
             try {
 
-                // Ask user what he wants
+
                 dos.writeUTF("Pretende efetuar registo ou login?\n" +
                         "Escreva Sair para terminar a conexao.");
 
-                // receive the answer from client
                 recebido = dis.readUTF().split(":");
                 comando = recebido[0];
 
                 if (comando.equals("Sair")) {
-                    System.out.println("Client " + this.s + " sends exit...");
-                    System.out.println("Closing this connection.");
+                    System.out.println("Cliente" + this.s + " sai...");
+                    System.out.println("A fechar a conexao.");
                     this.s.close();
-                    System.out.println("Connection closed");
+                    System.out.println("Conexao fechada");
                     break;
                 }
 
@@ -58,7 +57,7 @@ public class CovidHandler extends Thread {
                         break;
 
                     default:
-                        dos.writeUTF("Invalid input");
+                        dos.writeUTF("Input invalido");
                         break;
                 }
             } catch (IOException e) {

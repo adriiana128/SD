@@ -34,9 +34,9 @@ public class CovidCliente {
                 // and then break from the while loop
                 if(tosend.equals("Sair"))
                 {
-                    System.out.println("Closing this connection : " + s);
+                    System.out.println("A fechar a conexao : " + s);
                     s.close();
-                    System.out.println("Connection closed");
+                    System.out.println("Conexao fechada");
                     break;
                 }
 

@@ -7,6 +7,6 @@ public interface AlarmeCovid {
     Conta login(String username, String password);
     Conta registo(String username, String password);
     Contas getContas() throws IOException;
-
+    String print(Contas x);
 
 }

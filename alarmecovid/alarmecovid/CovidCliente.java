@@ -1,21 +1,57 @@
 package alarmecovid;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
 
 
 public class CovidCliente {
-    static void print(Contas x){
-
-        for(Conta a : x.getContas().values())
-            System.out.println(a.getNome() + "///" +a.getPassword());
-
-    }
 
     public static void main(String[] args) throws Exception {
-        AlarmeCovid covid = new CovidStub();
 
-        covid.registo("userteste","password");
-        
+        try
+        {
+            Scanner scn = new Scanner(System.in);
+
+            // getting localhost ip
+            InetAddress ip = InetAddress.getByName("localhost");
+            Socket s = new Socket(ip, 12345);
+
+            // obtaining input and out streams
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+            DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+
+            // the following loop performs the exchange of
+            // information between client and client handler
+            while (true)
+            {
+                System.out.println(dis.readUTF());
+                String tosend = scn.nextLine();
+                dos.writeUTF(tosend);
+
+                // If client sends exit,close this connection
+                // and then break from the while loop
+                if(tosend.equals("Sair"))
+                {
+                    System.out.println("Closing this connection : " + s);
+                    s.close();
+                    System.out.println("Connection closed");
+                    break;
+                }
+
+                // printing date or time as requested by client
+                String received = dis.readUTF();
+                System.out.println(received);
+            }
+
+            // closing resources
+            scn.close();
+            dis.close();
+            dos.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
+
 }

@@ -3,12 +3,12 @@ package alarmecovid;
 import java.io.*;
 import java.net.Socket;
 
-public class CovidStub implements AlarmeCovid {
+public class CovidStub implements AlarmeCovid  {
     private final Socket s;
     private final DataOutputStream dos;
     private final DataInputStream dis;
 
-    public CovidStub() throws IOException{
+    public CovidStub(Socket s, DataOutputStream dos, DataInputStream dis) throws IOException{
         this.s = new Socket("localhost",12345);
         this.dos = new DataOutputStream(new BufferedOutputStream(s.getOutputStream()));
         this.dis = new DataInputStream(new BufferedInputStream(s.getInputStream()));
@@ -52,4 +52,11 @@ public class CovidStub implements AlarmeCovid {
         System.out.println(user+"    cliente  "+ password);
         return null;
     }
+
+    @Override
+    public String print(Contas x) {
+        return null;
+    }
+
+
 }

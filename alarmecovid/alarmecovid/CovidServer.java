@@ -9,38 +9,31 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CovidServer {
 
 
-    static void print(Contas x){
-
-        for(Conta a : x.getContas().values())
-            System.out.println(a.getNome() + "///" +a.getPassword());
-
-    }
-
     public static void main(String[] args) throws IOException {
-        AlarmeCovid covid = new CovidImpl();
         ServerSocket ss = new ServerSocket(12345);
 
         while(true){
-            try(var s = ss.accept()){
-                var dos = new DataOutputStream(new BufferedOutputStream(s.getOutputStream()));
-                var dis = new DataInputStream(new BufferedInputStream(s.getInputStream()));
+            Socket s = null;
+            try{
+                s = ss.accept();
+                System.out.println("Novo cliente conectado: " + s);
+                var dos = new DataOutputStream(s.getOutputStream());
+                var dis = new DataInputStream(s.getInputStream());
 
-                while(true){
-                    switch(dis.readUTF()){
-                        case "login":
-                        case "registo":
-                            String username = dis.readUTF();
-                            String password = dis.readUTF();
-                            covid.registo(username,password);
-                            dos.flush();
-                            break;
+                System.out.println("A dar uma nova thread ao cliente");
 
-                    }
+                Thread t = new CovidHandler(s,dis,dos);
+
+                t.start();
+            }
+            catch (Exception e){
+                s.close();
+                e.printStackTrace();
                 }
             }
         }
 
-    }
-
-
 }
+
+
+

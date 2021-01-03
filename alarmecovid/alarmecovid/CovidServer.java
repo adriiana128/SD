@@ -10,7 +10,9 @@ public class CovidServer {
 
 
     public static void main(String[] args) throws IOException {
+        AlarmeCovid covid = new CovidImpl();
         ServerSocket ss = new ServerSocket(12345);
+
 
         while(true){
             Socket s = null;
@@ -22,7 +24,7 @@ public class CovidServer {
 
                 System.out.println("A dar uma nova thread ao cliente");
 
-                Thread t = new CovidHandler(s,dis,dos);
+                Thread t = new CovidHandler(s,dis,dos,covid);
 
                 t.start();
             }

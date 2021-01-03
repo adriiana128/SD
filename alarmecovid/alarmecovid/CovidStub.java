@@ -1,5 +1,5 @@
 package alarmecovid;
-
+/*
 import java.io.*;
 import java.net.Socket;
 
@@ -59,4 +59,4 @@ public class CovidStub implements AlarmeCovid  {
     }
 
 
-}
+}*/

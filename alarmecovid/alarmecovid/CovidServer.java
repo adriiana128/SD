@@ -3,14 +3,14 @@ package alarmecovid;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class CovidServer {
 
 
     public static void main(String[] args) throws IOException {
-        AlarmeCovid covid = new CovidImpl();
+        int N =10;
+        Contas[][] map = initMap(N);
+        AlarmeCovid covid = new CovidImpl(map,N);
         ServerSocket ss = new ServerSocket(12345);
 
 
@@ -34,6 +34,15 @@ public class CovidServer {
                 }
             }
         }
+
+    private static Contas[][] initMap(int n) {
+        Contas[][] map = new Contas[n][n];
+        for(int i =0;i<n;i++)
+            for(int j =0 ; j<n ; j++)
+                map[i][j] = new Contas();
+
+            return map;
+    }
 
 }
 

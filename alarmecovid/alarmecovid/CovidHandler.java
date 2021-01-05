@@ -31,7 +31,8 @@ public class CovidHandler extends Thread {
         String comando;
         Conta conta = null;
         boolean entrou = false;
-        while (true) {
+        boolean saudavel = true;
+        while (saudavel) {
             try {
                 if (!entrou) {
                     if (recebido != null) clearArray(recebido);
@@ -51,9 +52,9 @@ public class CovidHandler extends Thread {
                     switch (comando) {
                         case "registo":
                             Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
-                            conta = covid.registo(recebido[1], recebido[2], localizacao);
+                            conta = covid.registo(recebido[1], recebido[2], localizacao,"Saudável");
                             if( covid.getContas().getCliente(recebido[1]).getPassword().equals(recebido[2])) entrou= true;
-                            dos.writeUTF(covid.print(covid.getContas()));
+                            dos.writeUTF(covid.printMap());
                             break;
 
                         case "login":
@@ -73,7 +74,7 @@ public class CovidHandler extends Thread {
                 else{
                     clearArray(recebido);
                     dos.writeUTF("1-Saber Localizacao atual\n" +
-                                "2:x:y - Saber quantas pessoas estao na localizacao tal\n" +
+                                "2:x:y - Saber quantas pessoas estao na localizacao (x,y)\n" +
                                 "3 - Saber localizacao vazia\n" +
                                 "4 - Informar doenca\n" +
                                 "5 - logout\n" +
@@ -92,8 +93,12 @@ public class CovidHandler extends Thread {
                             dos.writeUTF("Existem " + total + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
                             break;
                         case "3":
+                            dos.writeUTF(covid.getLocalVazio());
                             break;
                         case "4":
+                            /*covid.isInfetado(conta);
+                            saudavel = false;
+                            dos.writeUTF("Utilizador esta infetado");*/
                             break;
                         case "5":
                             conta = null;

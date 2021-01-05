@@ -1,24 +1,28 @@
 package alarmecovid;
 
 import java.security.KeyPair;
+import java.util.Enumeration;
 
 public class Conta {
 
     private String nome;
     private String password;
     private Localizacao localizacao;
+    private String estadoSaude;
 
 
     Conta(){
         nome="";
         password="";
         localizacao = new Localizacao();
+        estadoSaude = "Saudavel";
     }
 
-    public Conta(String nome, String password,Localizacao localizacao) {
+    public Conta(String nome, String password,Localizacao localizacao,String estsaude) {
         this.nome = nome;
         this.password = password;
         this.localizacao = localizacao;
+        this.estadoSaude = estsaude;
     }
 
     public String getNome() {
@@ -43,5 +47,9 @@ public class Conta {
 
     public void setLocalizacao(Localizacao localizacao) {
         this.localizacao = localizacao;
+    }
+
+    public void isInfetado(){
+        this.estadoSaude = "Infetado";
     }
 }

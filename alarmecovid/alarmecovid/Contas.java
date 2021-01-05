@@ -21,13 +21,13 @@ public class Contas {
             return this.clientes.get(s);
         }
 
-        Conta registo (String username, String password,Localizacao localizacao)  {
+        Conta registo (String username, String password,Localizacao localizacao,String estSaude)  {
             lock.lock();
             try{
                 Conta c = clientes.get(username);
 
                 if(c==null){
-                    c = new Conta(username,password,localizacao);
+                    c = new Conta(username,password,localizacao,estSaude);
                     clientes.put(username,c);
 
                     return c;

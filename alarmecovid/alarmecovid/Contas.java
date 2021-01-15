@@ -21,7 +21,7 @@ public class Contas {
             return this.clientes.get(s);
         }
 
-        Conta registo (String username, String password,Localizacao localizacao,String estSaude)  {
+        Conta registo (String username, String password,Localizacao localizacao,boolean estSaude)  {
             lock.lock();
             try{
                 Conta c = clientes.get(username);

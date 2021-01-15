@@ -8,21 +8,21 @@ public class Conta {
     private String nome;
     private String password;
     private Localizacao localizacao;
-    private String estadoSaude;
+    private boolean saudavel;
 
 
     Conta(){
         nome="";
         password="";
         localizacao = new Localizacao();
-        estadoSaude = "Saudavel";
+        saudavel = true;
     }
 
-    public Conta(String nome, String password,Localizacao localizacao,String estsaude) {
+    public Conta(String nome, String password,Localizacao localizacao,boolean estsaude) {
         this.nome = nome;
         this.password = password;
         this.localizacao = localizacao;
-        this.estadoSaude = estsaude;
+        this.saudavel = estsaude;
     }
 
     public String getNome() {
@@ -50,6 +50,6 @@ public class Conta {
     }
 
     public void isInfetado(){
-        this.estadoSaude = "Infetado";
+        this.saudavel = false;
     }
 }

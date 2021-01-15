@@ -19,8 +19,9 @@ public class CovidCliente {
 
             DataInputStream dis = new DataInputStream(s.getInputStream());
             DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+            boolean keepgoing = true;
 
-            while (true)
+            while (keepgoing)
             {
                 System.out.println(dis.readUTF());
                 String tosend = scn.nextLine();
@@ -33,8 +34,10 @@ public class CovidCliente {
                     System.out.println("Conexao fechada");
                     break;
                 }
-
                 String received = dis.readUTF();
+                if(received.equals("Infetado")){
+                    keepgoing = false;
+                }
                 System.out.println(received);
             }
 

@@ -7,7 +7,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class CovidImpl implements AlarmeCovid {
 
     private final Contas contas;
-    //private final Mapa<Integer,Integer,Contas> mapa;
     private final Contas[][] map;
     private int N;
     private ReentrantLock lock = new ReentrantLock();
@@ -24,7 +23,6 @@ public class CovidImpl implements AlarmeCovid {
         this.map = map;
         this.contas = new Contas();
         this.N = N;
-        //this.mapa = new Mapa<>();
 
     }
 
@@ -45,7 +43,7 @@ public class CovidImpl implements AlarmeCovid {
     }
 
     @Override
-    public Conta registo(String username, String password,Localizacao localizacao,String estadoSaude) {
+    public Conta registo(String username, String password,Localizacao localizacao,boolean estadoSaude) {
         lock.lock();
         try {
             Conta c = contas.getCliente(username);
@@ -102,7 +100,14 @@ public class CovidImpl implements AlarmeCovid {
         return send.toString();
     }
 
+    public void mudaPosicao(Conta c,int x,int y){
+        c.setLocalizacao(new Localizacao(x,y));
+    }
 
+
+    public Contas[][] getMap() {
+        return map;
+    }
 
     public String print(Contas x){
         StringBuilder send = new StringBuilder();

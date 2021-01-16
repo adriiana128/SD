@@ -53,7 +53,7 @@ public class CovidHandler extends Thread {
                     switch (comando) {
                         case "registo":
                             Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
-                            conta = covid.registo(recebido[1], recebido[2], localizacao,true);
+                            conta = covid.registo(recebido[1], recebido[2], localizacao,true, null);
                             if( covid.getContas().getCliente(recebido[1]).getPassword().equals(recebido[2])) entrou= true;
                             dos.writeUTF(covid.printMap());
                             break;
@@ -77,9 +77,9 @@ public class CovidHandler extends Thread {
                     dos.writeUTF("1-Saber Localizacao atual\n" +
                                 "2:x:y - Saber quantas pessoas estao na localizacao (x,y)\n" +
                                 "3:x:y - Mudar a posição para a localização (x,y)\n" +
-                                "4 - Saber localizacao vazia\n" +
+                                //"4 - Saber localizacao vazia\n" +
                                 "5 - Informar doenca\n" +
-                                "6 - logout\n" +
+                                "6 - Logout\n" +
                                 "7 - Encerrar cliente\n");
                     recebido = dis.readUTF().split(":");
                     comando = recebido[0];
@@ -93,17 +93,20 @@ public class CovidHandler extends Thread {
                             dos.writeUTF(recebido[1] + " " + recebido[2]);
                             int total = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             dos.writeUTF("Existem " + total + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
+                            if (total>0) {
+                                notificador = new Notificador(s,dis,dos,covid, new Localizacao(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2])));
+                            }
                             break;
                         case "3":
                             //dos.writeUTF(recebido[1] + " " + recebido[2]);
                             covid.mudaPosicao(conta,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             dos.writeUTF("done!");
                             break;
-                        case "4":
-                          /*  notificador = new Notificador(s,dis,dos,covid);
+                        /* case "4":
+                            notificador = new Notificador(s,dis,dos,covid);
                             dos.writeUTF(covid.getLocalVazio()); TODO
-*/
                             break;
+                        */
                         case "5":
                             covid.isInfetado(conta);
                             saudavel = false;

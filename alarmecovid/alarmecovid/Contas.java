@@ -1,6 +1,7 @@
 package alarmecovid;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,13 +22,13 @@ public class Contas {
             return this.clientes.get(s);
         }
 
-        Conta registo (String username, String password,Localizacao localizacao,boolean estSaude)  {
+        Conta registo (String username, String password, Localizacao localizacao, boolean estSaude, List<String> contatos)  {
             lock.lock();
             try{
                 Conta c = clientes.get(username);
 
                 if(c==null){
-                    c = new Conta(username,password,localizacao,estSaude);
+                    c = new Conta(username,password,localizacao,estSaude,contatos);
                     clientes.put(username,c);
 
                     return c;

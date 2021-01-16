@@ -1,10 +1,12 @@
 package alarmecovid;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class CovidImpl implements AlarmeCovid {
+public class
+ CovidImpl implements AlarmeCovid {
 
     private final Contas contas;
     private final Contas[][] map;
@@ -43,12 +45,12 @@ public class CovidImpl implements AlarmeCovid {
     }
 
     @Override
-    public Conta registo(String username, String password,Localizacao localizacao,boolean estadoSaude) {
+    public Conta registo(String username, String password, Localizacao localizacao, boolean estadoSaude, List<String> contatos) {
         lock.lock();
         try {
             Conta c = contas.getCliente(username);
             if (c == null) {
-                c = new Conta(username, password, localizacao,estadoSaude);
+                c = new Conta(username, password, localizacao,estadoSaude,contatos);
                 contas.addCliente(c);
                 map[localizacao.getLinha()][localizacao.getColuna()].addCliente(c);
                 return c;
@@ -73,7 +75,7 @@ public class CovidImpl implements AlarmeCovid {
         return conta;
     }
 
-
+/*
     public String getLocalVazio(){
         StringBuilder locais = new StringBuilder();
         int i,j,k=0;
@@ -84,6 +86,7 @@ public class CovidImpl implements AlarmeCovid {
         if(locais.toString().isEmpty()) return "Não há locais vazios";
         else return locais.toString();
     }
+ */
 
     public void isInfetado(Conta c){
         this.contas.getCliente(c.getNome()).isInfetado();

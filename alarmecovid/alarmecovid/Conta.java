@@ -2,6 +2,7 @@ package alarmecovid;
 
 import java.security.KeyPair;
 import java.util.Enumeration;
+import java.util.List;
 
 public class Conta {
 
@@ -9,6 +10,7 @@ public class Conta {
     private String password;
     private Localizacao localizacao;
     private boolean saudavel;
+    private List<String> contatos;
 
 
     Conta(){
@@ -16,13 +18,15 @@ public class Conta {
         password="";
         localizacao = new Localizacao();
         saudavel = true;
+        contatos = null;
     }
 
-    public Conta(String nome, String password,Localizacao localizacao,boolean estsaude) {
+    public Conta(String nome, String password,Localizacao localizacao,boolean estsaude, List<String> contatos) {
         this.nome = nome;
         this.password = password;
         this.localizacao = localizacao;
         this.saudavel = estsaude;
+        this.contatos = contatos;
     }
 
     public String getNome() {
@@ -52,4 +56,8 @@ public class Conta {
     public void isInfetado(){
         this.saudavel = false;
     }
+
+    public void setContatos(List<String> contatos) { this.contatos = contatos; }
+
+    public List<String> getContatos() { return contatos; }
 }

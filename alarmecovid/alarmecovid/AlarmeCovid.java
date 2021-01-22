@@ -10,8 +10,8 @@ public interface AlarmeCovid {
     Conta registo(String username, String password, Localizacao localizacao, boolean estadoSaude, List<String> contatos);
     Contas getContas() throws IOException;
     String print(Contas x);
-    int getNrPessoas(int linha, int col);
-    //String getLocalVazio();
+    int getNrPessoas(int linha, int col) throws InterruptedException;
+
     String printMap();
     void isInfetado(Conta c);
     void mudaPosicao(Conta c, int x,int y);

@@ -57,6 +57,9 @@ public class Conta {
         this.saudavel = false;
     }
 
+    public boolean getSaude(){
+        return this.saudavel;
+    }
     public void setContatos(List<String> contatos) { this.contatos = contatos; }
 
     public List<String> getContatos() { return contatos; }

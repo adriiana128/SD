@@ -14,17 +14,16 @@ public class CovidServer {
         ServerSocket ss = new ServerSocket(12345);
 
 
+
         while(true){
             Socket s = null;
             try{
                 s = ss.accept();
                 System.out.println("Novo cliente conectado: " + s);
-                var dos = new DataOutputStream(s.getOutputStream());
-                var dis = new DataInputStream(s.getInputStream());
 
                 System.out.println("A dar uma nova thread ao cliente");
 
-                Thread t = new CovidHandler(s,dis,dos,covid);
+                Thread t = new Thread(new CovidHandler(s,covid));
 
                 t.start();
             }

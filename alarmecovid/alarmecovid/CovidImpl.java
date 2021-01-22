@@ -3,15 +3,19 @@ package alarmecovid;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class
- CovidImpl implements AlarmeCovid {
+
+public class CovidImpl implements AlarmeCovid {
 
     private final Contas contas;
     private final Contas[][] map;
     private int N;
     private ReentrantLock lock = new ReentrantLock();
+    private Condition cond= lock.newCondition();
+
+
 
     @Override
     public String toString() {
@@ -67,26 +71,17 @@ public class
     }
 
 
-    public int getNrPessoas(int linha,int col){
-        int conta= 0;
-        //conta = mapa.get(linha,col).getContas().size();
-        conta = map[linha][col].getContas().size();
-
-        return conta;
+    public int getNrPessoas(int linha,int col) throws InterruptedException {
+            try{
+                lock.lock();
+                while (map[linha][col].getContas().size() > 0) {
+                    cond.await();
+                }
+                return map[linha][col].getContas().size();
+            }finally {
+                lock.unlock();
+            }
     }
-
-/*
-    public String getLocalVazio(){
-        StringBuilder locais = new StringBuilder();
-        int i,j,k=0;
-        for(i=0;i<N;i++)
-            for(j=0;j<N;j++)
-                if(map[i][j].getContas().size()==0) locais.append("(" + i + "," + j + ");\n");
-
-        if(locais.toString().isEmpty()) return "Não há locais vazios";
-        else return locais.toString();
-    }
- */
 
     public void isInfetado(Conta c){
         this.contas.getCliente(c.getNome()).isInfetado();
@@ -104,9 +99,21 @@ public class
     }
 
     public void mudaPosicao(Conta c,int x,int y){
-        c.setLocalizacao(new Localizacao(x,y));
-    }
 
+        try{
+            lock.lock();
+            map[c.getLocalizacao().getLinha()][c.getLocalizacao().getColuna()].getContas().remove(c.getNome());
+            c.setLocalizacao(new Localizacao(x,y));
+            map[c.getLocalizacao().getLinha()][c.getLocalizacao().getColuna()].getContas().put(c.getNome(),c);
+            cond.signalAll();
+
+        }
+        finally {
+            lock.unlock();
+        }
+
+
+    }
 
     public Contas[][] getMap() {
         return map;

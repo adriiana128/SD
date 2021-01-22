@@ -5,19 +5,23 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class CovidHandler extends Thread {
+
+public class CovidHandler implements Runnable {
     final DataInputStream dis;
     final DataOutputStream dos;
-    Socket s;
+    final Socket s;
     final AlarmeCovid covid;
-    Notificador notificador;
+    private ReentrantLock lock = new ReentrantLock();
+    private Condition cond= lock.newCondition();
+    private Thread thread;
 
-
-    public CovidHandler(Socket s, DataInputStream dis, DataOutputStream dos, AlarmeCovid covid) {
+    public CovidHandler(Socket s, AlarmeCovid covid) throws IOException {
         this.s = s;
-        this.dis = dis;
-        this.dos = dos;
+        this.dos = new DataOutputStream(s.getOutputStream());
+        this.dis = new DataInputStream(s.getInputStream());
         this.covid = covid;
 
     }
@@ -26,7 +30,6 @@ public class CovidHandler extends Thread {
         Arrays.fill(array, null);
     }
 
-    @Override
     public void run() {
         String[] recebido = null;
         String comando;
@@ -43,13 +46,6 @@ public class CovidHandler extends Thread {
                     recebido = dis.readUTF().split(":");
                     comando = recebido[0];
 
-                    if (comando.equals("Sair")) {
-                        System.out.println("Cliente" + this.s + " sai...");
-                        System.out.println("A fechar a conexao.");
-                        this.s.close();
-                        System.out.println("Conexao fechada");
-                        break;
-                    }
                     switch (comando) {
                         case "registo":
                             Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
@@ -59,12 +55,19 @@ public class CovidHandler extends Thread {
                             break;
 
                         case "login":
-                            conta = covid.login(recebido[1], recebido[2]);
                             if (covid.login(recebido[1], recebido[2]) != null) {
-                                dos.writeUTF("login efetuado com sucesso!");
-                                entrou = true;
+                                conta = covid.login(recebido[1], recebido[2]);
+                                if(!covid.getContas().getContas().get(conta.getNome()).getSaude()) {
+                                    entrou=false;
+                                    dos.writeUTF("O utilizador está infetado!\n");
+                                }
+                                else{
+                                    dos.writeUTF("login efetuado com sucesso!");
+                                    entrou = true;
+                                }
                             }
                             else dos.writeUTF("Credenciais de acesso invalidas!");
+
                             break;
 
                         default:
@@ -77,10 +80,9 @@ public class CovidHandler extends Thread {
                     dos.writeUTF("1-Saber Localizacao atual\n" +
                                 "2:x:y - Saber quantas pessoas estao na localizacao (x,y)\n" +
                                 "3:x:y - Mudar a posição para a localização (x,y)\n" +
-                                //"4 - Saber localizacao vazia\n" +
-                                "5 - Informar doenca\n" +
-                                "6 - Logout\n" +
-                                "7 - Encerrar cliente\n");
+                                "4 - Informar doenca\n" +
+                                "5 - Logout\n" +
+                                "6 - Encerrar cliente\n");
                     recebido = dis.readUTF().split(":");
                     comando = recebido[0];
 
@@ -90,40 +92,34 @@ public class CovidHandler extends Thread {
                             dos.writeUTF("A sua localizacao atual é:" + localizacao.getLinha() + "," + localizacao.getColuna());
                             break;
                         case "2":
-                            dos.writeUTF(recebido[1] + " " + recebido[2]);
                             int total = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
-                            dos.writeUTF("Existem " + total + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
-                            if (total>0) {
-                                notificador = new Notificador(s,dis,dos,covid, new Localizacao(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2])));
+                            if(total > 0 ) {
+                                dos.writeUTF("Existem " + total + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
+
                             }
+                            else  dos.writeUTF("Posição (" + recebido[1] +"," + recebido[2] + ") está vazia!");
                             break;
                         case "3":
-                            //dos.writeUTF(recebido[1] + " " + recebido[2]);
                             covid.mudaPosicao(conta,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             dos.writeUTF("done!");
                             break;
-                        /* case "4":
-                            notificador = new Notificador(s,dis,dos,covid);
-                            dos.writeUTF(covid.getLocalVazio()); TODO
-                            break;
-                        */
-                        case "5":
+                        case "4":
                             covid.isInfetado(conta);
                             saudavel = false;
                             dos.writeUTF("Infetado");
                             break;
-                        case "6":
+                        case "5":
                             conta = null;
                             entrou = false;
                             dos.writeUTF("done!");
                             break;
-                        case "7":
+                        case "6":
                             break;
                         default:
                             break;
                     }
                 }
-            } catch(IOException e){
+            } catch(IOException | InterruptedException e){
                 e.printStackTrace();
             }
 

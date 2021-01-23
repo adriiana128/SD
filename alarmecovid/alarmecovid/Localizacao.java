@@ -30,5 +30,12 @@ public class Localizacao {
         this.coluna = coluna;
     }
 
-
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("Localizacao{");
+        sb.append("linha=").append(linha);
+        sb.append(", coluna=").append(coluna);
+        sb.append('}');
+        return sb.toString();
+    }
 }

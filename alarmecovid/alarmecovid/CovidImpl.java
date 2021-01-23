@@ -1,8 +1,6 @@
 package alarmecovid;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -14,6 +12,7 @@ public class CovidImpl implements AlarmeCovid {
     private int N;
     private ReentrantLock lock = new ReentrantLock();
     private Condition cond= lock.newCondition();
+    private Map<String,List<Localizacao>> notificacoes = new HashMap<>();
 
 
 
@@ -58,8 +57,7 @@ public class CovidImpl implements AlarmeCovid {
                 contas.addCliente(c);
                 map[localizacao.getLinha()][localizacao.getColuna()].addCliente(c);
                 return c;
-            } else System.out.println("CovidCliente já existe!");
-            return null;
+            } else return null;
         }
         finally {
             lock.unlock();
@@ -74,9 +72,9 @@ public class CovidImpl implements AlarmeCovid {
     public int getNrPessoas(int linha,int col) throws InterruptedException {
             try{
                 lock.lock();
-                while (map[linha][col].getContas().size() > 0) {
-                    cond.await();
-                }
+              /*  while (map[linha][col].getContas().size() > 0) {
+
+                }*/
                 return map[linha][col].getContas().size();
             }finally {
                 lock.unlock();
@@ -105,7 +103,7 @@ public class CovidImpl implements AlarmeCovid {
             map[c.getLocalizacao().getLinha()][c.getLocalizacao().getColuna()].getContas().remove(c.getNome());
             c.setLocalizacao(new Localizacao(x,y));
             map[c.getLocalizacao().getLinha()][c.getLocalizacao().getColuna()].getContas().put(c.getNome(),c);
-            cond.signalAll();
+            signalAll();
 
         }
         finally {
@@ -114,6 +112,28 @@ public class CovidImpl implements AlarmeCovid {
 
 
     }
+
+
+    public void await() throws InterruptedException {
+        try {
+            lock.lock();
+            cond.await();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    public void signalAll(){
+        try {
+            lock.lock();
+            cond.signalAll();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
 
     public Contas[][] getMap() {
         return map;
@@ -128,4 +148,31 @@ public class CovidImpl implements AlarmeCovid {
         }
         return send.toString();
     }
+
+    public void addNotificacoes(String user,Localizacao loc) {
+
+        if (this.notificacoes.get(user) != null) {
+            this.notificacoes.get(user).add(loc);
+        } else {
+            this.notificacoes.put(user, new ArrayList<>());
+            this.notificacoes.get(user).add(loc);
+        }
+    }
+
+    public List<String> notifica(String user) {
+        if (this.notificacoes.containsKey(user)) {
+
+            this.notificacoes.get(user).removeIf(loc -> this.map[loc.getLinha()][loc.getColuna()].getContas().size() > 0);
+            List<Localizacao> locs = new ArrayList<>(this.notificacoes.get(user));
+            this.notificacoes.remove(user);
+            List<String> not = new ArrayList<>();
+
+            for(Localizacao loc : locs)
+                not.add(loc.toString());
+
+            return not;
+        }
+        else return null;
+    }
 }
+

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,6 +18,7 @@ public class CovidHandler implements Runnable {
     private ReentrantLock lock = new ReentrantLock();
     private Condition cond= lock.newCondition();
     private Thread thread;
+    Notificador notificador;
 
     public CovidHandler(Socket s, AlarmeCovid covid) throws IOException {
         this.s = s;
@@ -50,8 +52,12 @@ public class CovidHandler implements Runnable {
                         case "registo":
                             Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
                             conta = covid.registo(recebido[1], recebido[2], localizacao,true, null);
-                            if( covid.getContas().getCliente(recebido[1]).getPassword().equals(recebido[2])) entrou= true;
-                            dos.writeUTF(covid.printMap());
+                            //if( covid.getContas().getCliente(recebido[1]).getPassword().equals(recebido[2])) entrou= true;
+                            if(conta!= null) {
+                                entrou = true;
+                                dos.writeUTF("Registo efetuado com sucesso!");
+                            }
+                            else dos.writeUTF("Utilizador já existe!");
                             break;
 
                         case "login":
@@ -77,12 +83,13 @@ public class CovidHandler implements Runnable {
                 }
                 else{
                     clearArray(recebido);
-                    dos.writeUTF("1-Saber Localizacao atual\n" +
+                    dos.writeUTF("1 - Saber Localizacao atual\n" +
                                 "2:x:y - Saber quantas pessoas estao na localizacao (x,y)\n" +
                                 "3:x:y - Mudar a posição para a localização (x,y)\n" +
                                 "4 - Informar doenca\n" +
                                 "5 - Logout\n" +
-                                "6 - Encerrar cliente\n");
+                                "6 - Notificacoes\n" +
+                                "Escreva 'Sair' para encerrar o cliente\n") ;
                     recebido = dis.readUTF().split(":");
                     comando = recebido[0];
 
@@ -94,8 +101,9 @@ public class CovidHandler implements Runnable {
                         case "2":
                             int total = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             if(total > 0 ) {
+                                notificador = new Notificador(conta.getNome(),covid,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]),dos);
+                                notificador.start();
                                 dos.writeUTF("Existem " + total + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
-
                             }
                             else  dos.writeUTF("Posição (" + recebido[1] +"," + recebido[2] + ") está vazia!");
                             break;
@@ -114,6 +122,9 @@ public class CovidHandler implements Runnable {
                             dos.writeUTF("done!");
                             break;
                         case "6":
+                            List<String> not = covid.notifica(conta.getNome());
+                            if(not != null) dos.writeUTF(not.toString());
+                            else dos.writeUTF("Não há notificações para o utilizador!");
                             break;
                         default:
                             break;

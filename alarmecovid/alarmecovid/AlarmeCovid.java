@@ -16,5 +16,8 @@ public interface AlarmeCovid {
     void isInfetado(Conta c);
     void mudaPosicao(Conta c, int x,int y);
     Contas[][] getMap();
-
+    void await() throws InterruptedException;
+    void signalAll();
+    List<String> notifica(String user);
+    void addNotificacoes(String user,Localizacao loc);
 }

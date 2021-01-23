@@ -19,6 +19,7 @@ public class CovidHandler implements Runnable {
     private Condition cond= lock.newCondition();
     private Thread thread;
     Notificador notificador;
+    int N =10;
 
     public CovidHandler(Socket s, AlarmeCovid covid) throws IOException {
         this.s = s;
@@ -113,8 +114,13 @@ public class CovidHandler implements Runnable {
                             else  dos.writeUTF("Posição (" + recebido[1] +"," + recebido[2] + ") está vazia!");
                             break;
                         case "4":
-                            covid.mudaPosicao(conta,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
-                            dos.writeUTF("done!");
+                            if(Integer.parseInt(recebido[1]) > N || Integer.parseInt(recebido[2]) > N){
+                                dos.writeUTF("Posição não existe no mapa");
+                            }
+                            else{
+                                covid.mudaPosicao(conta,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
+                                dos.writeUTF("done!");
+                            }
                             break;
                         case "5":
                             covid.isInfetado(conta);

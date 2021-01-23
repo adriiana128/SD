@@ -84,11 +84,12 @@ public class CovidHandler implements Runnable {
                 else{
                     clearArray(recebido);
                     dos.writeUTF("1 - Saber Localizacao atual\n" +
-                                "2:x:y - Saber quantas pessoas estao na localizacao (x,y)\n" +
-                                "3:x:y - Mudar a posição para a localização (x,y)\n" +
-                                "4 - Informar doenca\n" +
-                                "5 - Logout\n" +
-                                "6 - Notificacoes\n" +
+                                "2:x:y - Saber quantas pessoas estão na localização (x,y)\n" +
+                                "3:x:y - Saber quando não houver ninguém na localizacao (x,y)\n" +
+                                "4:x:y - Mudar a posição para a localização (x,y)\n" +
+                                "5 - Informar doenca\n" +
+                                "6 - Logout\n" +
+                                "7 - Notificacoes\n" +
                                 "Escreva 'Sair' para encerrar o cliente\n") ;
                     recebido = dis.readUTF().split(":");
                     comando = recebido[0];
@@ -99,6 +100,10 @@ public class CovidHandler implements Runnable {
                             dos.writeUTF("A sua localizacao atual é:" + localizacao.getLinha() + "," + localizacao.getColuna());
                             break;
                         case "2":
+                            int totalP = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
+                            dos.writeUTF("Existem " + totalP + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
+                             break;
+                        case "3":
                             int total = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             if(total > 0 ) {
                                 notificador = new Notificador(conta.getNome(),covid,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]),dos);
@@ -107,21 +112,21 @@ public class CovidHandler implements Runnable {
                             }
                             else  dos.writeUTF("Posição (" + recebido[1] +"," + recebido[2] + ") está vazia!");
                             break;
-                        case "3":
+                        case "4":
                             covid.mudaPosicao(conta,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             dos.writeUTF("done!");
                             break;
-                        case "4":
+                        case "5":
                             covid.isInfetado(conta);
                             saudavel = false;
                             dos.writeUTF("Infetado");
                             break;
-                        case "5":
+                        case "6":
                             conta = null;
                             entrou = false;
                             dos.writeUTF("done!");
                             break;
-                        case "6":
+                        case "7":
                             List<String> not = covid.notifica(conta.getNome());
                             if(not != null) dos.writeUTF(not.toString());
                             else dos.writeUTF("Não há notificações para o utilizador!");

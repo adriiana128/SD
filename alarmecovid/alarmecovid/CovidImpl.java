@@ -72,9 +72,6 @@ public class CovidImpl implements AlarmeCovid {
     public int getNrPessoas(int linha,int col) throws InterruptedException {
             try{
                 lock.lock();
-              /*  while (map[linha][col].getContas().size() > 0) {
-
-                }*/
                 return map[linha][col].getContas().size();
             }finally {
                 lock.unlock();

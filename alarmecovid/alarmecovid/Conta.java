@@ -1,7 +1,5 @@
 package alarmecovid;
 
-import java.security.KeyPair;
-import java.util.Enumeration;
 import java.util.List;
 
 public class Conta {

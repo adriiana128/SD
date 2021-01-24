@@ -1,7 +1,6 @@
 package alarmecovid;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,49 +21,6 @@ public class Contas {
             return this.clientes.get(s);
         }
 
-        Conta registo (String username, String password, Localizacao localizacao, boolean estSaude, List<String> contatos)  {
-            lock.lock();
-            try{
-                Conta c = clientes.get(username);
-
-                if(c==null){
-                    c = new Conta(username,password,localizacao,estSaude,contatos);
-                    clientes.put(username,c);
-
-                    return c;
-                }
-                else {
-                    System.out.println("Conta existe!");
-                }
-            }
-            finally {
-                lock.unlock();
-            }
-            return null;
-        }
-
-        Conta login(String username, String password){
-            lock.lock();
-
-            try{
-            Conta c = clientes.get(username);
-
-                if(c!=null){
-                    if(c.getPassword().equals(password))
-                        return c;
-                    else{
-                        System.out.println("Password invalida");
-                    }
-                }
-                else{
-                    System.out.println("Conta nao existe");
-                }
-            }
-            finally {
-                lock.unlock();
-            }
-            return null;
-        }
 
         Map<String, Conta> getContas(){
             return this.clientes;

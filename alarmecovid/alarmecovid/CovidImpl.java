@@ -1,6 +1,9 @@
 package alarmecovid;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -33,8 +36,8 @@ public class CovidImpl implements AlarmeCovid {
 
     @Override
     public Conta login(String username, String password) {
-        lock.lock();
         try {
+            lock.lock();
             Conta c = contas.getCliente(username);
             if (c != null) {
                 if (c.getPassword().equals(password)) return c;
@@ -49,8 +52,8 @@ public class CovidImpl implements AlarmeCovid {
 
     @Override
     public Conta registo(String username, String password, Localizacao localizacao, boolean estadoSaude, List<String> contatos) {
-        lock.lock();
         try {
+            lock.lock();
             Conta c = contas.getCliente(username);
             if (c == null) {
                 c = new Conta(username, password, localizacao,estadoSaude,contatos);
@@ -65,11 +68,17 @@ public class CovidImpl implements AlarmeCovid {
     }
 
     public Contas getContas(){
-        return this.contas;
+        try {
+            lock.lock();
+            return this.contas;
+        }
+        finally {
+            lock.unlock();
+        }
     }
 
 
-    public int getNrPessoas(int linha,int col) throws InterruptedException {
+    public int getNrPessoas(int linha,int col) {
             try{
                 lock.lock();
                 return map[linha][col].getContas().size();
@@ -79,19 +88,15 @@ public class CovidImpl implements AlarmeCovid {
     }
 
     public void isInfetado(Conta c){
-        this.contas.getCliente(c.getNome()).isInfetado();
+        try{
+            lock.lock();
+            this.contas.getCliente(c.getNome()).isInfetado();
+        }
+        finally{
+            lock.unlock();
+        }
     }
-
-    public String printMap() {
-        StringBuilder send = new StringBuilder();
-        for (int i = 0; i < N; i++)
-            for (int j = 0; j < N; j++) {
-                Map<String,Conta> contas = this.map[i][j].getContas();
-                for(Conta x: contas.values())
-                    send.append(x.getNome() + "(" + x.getLocalizacao().getLinha() + "," + x.getLocalizacao().getColuna() + ");\n");
-            }
-        return send.toString();
-    }
+    
 
     public void mudaPosicao(Conta c,int x,int y){
 
@@ -106,8 +111,6 @@ public class CovidImpl implements AlarmeCovid {
         finally {
             lock.unlock();
         }
-
-
     }
 
 
@@ -125,6 +128,7 @@ public class CovidImpl implements AlarmeCovid {
         try {
             lock.lock();
             cond.signalAll();
+
         }
         finally {
             lock.unlock();
@@ -133,43 +137,15 @@ public class CovidImpl implements AlarmeCovid {
 
 
     public Contas[][] getMap() {
-        return map;
-    }
-
-    public String print(Contas x){
-        StringBuilder send = new StringBuilder();
-        for(Conta a : x.getContas().values()) {
-            send.append(a.getNome()).append(" ").append(a.getPassword()).append("\n");
-
-
+        try{
+            lock.lock();
+            return map;
         }
-        return send.toString();
-    }
-
-    public void addNotificacoes(String user,Localizacao loc) {
-
-        if (this.notificacoes.get(user) != null) {
-            this.notificacoes.get(user).add(loc);
-        } else {
-            this.notificacoes.put(user, new ArrayList<>());
-            this.notificacoes.get(user).add(loc);
+        finally {
+            lock.unlock();
         }
     }
 
-    public List<String> notifica(String user) {
-        if (this.notificacoes.containsKey(user)) {
 
-            this.notificacoes.get(user).removeIf(loc -> this.map[loc.getLinha()][loc.getColuna()].getContas().size() > 0);
-            List<Localizacao> locs = new ArrayList<>(this.notificacoes.get(user));
-            this.notificacoes.remove(user);
-            List<String> not = new ArrayList<>();
-
-            for(Localizacao loc : locs)
-                not.add(loc.toString());
-
-            return not;
-        }
-        else return null;
-    }
 }
 

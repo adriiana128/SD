@@ -30,11 +30,12 @@ public class Notificador extends Thread {
                 while (map[linha][col].getContas().size() > 0) {
                     covid.await();
                 }
-                covid.addNotificacoes(user,new Localizacao(linha,col));
+                dos.writeUTF("Posição (" + linha + "," + col + ") vazia!");
+                //covid.addNotificacoes(user,new Localizacao(linha,col));
                 ocupado = false;
 
             }
-        } catch (InterruptedException  e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }

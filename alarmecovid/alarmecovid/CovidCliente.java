@@ -1,6 +1,7 @@
 package alarmecovid;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
@@ -8,7 +9,7 @@ import java.util.Scanner;
 
 public class CovidCliente {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
         try
         {
@@ -19,31 +20,26 @@ public class CovidCliente {
 
             DataInputStream dis = new DataInputStream(s.getInputStream());
             DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-            boolean keepgoing = true;
+            Thread t = new Thread(new Reader(s));
+            t.start();
 
-            while (keepgoing)
-            {
-                System.out.println(dis.readUTF());
+            while (true) {
                 String tosend = scn.nextLine();
                 dos.writeUTF(tosend);
-
                 if(tosend.equals("Sair"))
                 {
                     System.out.println("A fechar a conexao : " + s);
-                    s.close();
                     System.out.println("Conexao fechada");
                     break;
                 }
-                String received = dis.readUTF();
-                if(received.equals("Infetado")){
-                    keepgoing = false;
-                }
-                System.out.println(received);
+
             }
 
             scn.close();
             dis.close();
             dos.close();
+            s.close();
+
         }catch(Exception e){
             e.printStackTrace();
         }

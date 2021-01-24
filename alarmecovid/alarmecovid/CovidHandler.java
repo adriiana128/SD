@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -17,7 +16,6 @@ public class CovidHandler implements Runnable {
     final AlarmeCovid covid;
     private ReentrantLock lock = new ReentrantLock();
     private Condition cond= lock.newCondition();
-    private Thread thread;
     Notificador notificador;
     int N =10;
 
@@ -38,9 +36,10 @@ public class CovidHandler implements Runnable {
         String comando;
         Conta conta = null;
         boolean entrou = false;
-        boolean saudavel = true;
-        while (saudavel) {
+        boolean keepgoing = true;
+        while (keepgoing) {
             try {
+                dos.flush();
                 if (!entrou) {
                     if (recebido != null) clearArray(recebido);
                     dos.writeUTF("Pretende efetuar registo ou login?\n" +
@@ -53,7 +52,6 @@ public class CovidHandler implements Runnable {
                         case "registo":
                             Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
                             conta = covid.registo(recebido[1], recebido[2], localizacao,true, null);
-                            //if( covid.getContas().getCliente(recebido[1]).getPassword().equals(recebido[2])) entrou= true;
                             if(conta!= null) {
                                 entrou = true;
                                 dos.writeUTF("Registo efetuado com sucesso!");
@@ -65,7 +63,6 @@ public class CovidHandler implements Runnable {
                             if (covid.login(recebido[1], recebido[2]) != null) {
                                 conta = covid.login(recebido[1], recebido[2]);
                                 if(!covid.getContas().getContas().get(conta.getNome()).getSaude()) {
-                                    entrou=false;
                                     dos.writeUTF("O utilizador está infetado!\n");
                                 }
                                 else{
@@ -74,9 +71,11 @@ public class CovidHandler implements Runnable {
                                 }
                             }
                             else dos.writeUTF("Credenciais de acesso invalidas!");
-
                             break;
-
+                        case "Sair":
+                            keepgoing=false;
+                            System.out.println("Cliente " + s + " encerrado!");
+                            break;
                         default:
                             dos.writeUTF("Input invalido");
                             break;
@@ -85,25 +84,24 @@ public class CovidHandler implements Runnable {
                 else{
                     clearArray(recebido);
                     dos.writeUTF("1 - Saber Localizacao atual\n" +
-                                "2:x:y - Saber quantas pessoas estão na localização (x,y)\n" +
-                                "3:x:y - Saber quando não houver ninguém na localizacao (x,y)\n" +
-                                "4:x:y - Mudar a posição para a localização (x,y)\n" +
-                                "5 - Informar doenca\n" +
-                                "6 - Logout\n" +
-                                "7 - Notificacoes\n" +
-                                "Escreva 'Sair' para encerrar o cliente\n") ;
+                            "2:x:y - Saber quantas pessoas estão na localização (x,y)\n" +
+                            "3:x:y - Saber quando não houver ninguém na localizacao (x,y)\n" +
+                            "4:x:y - Mudar a posição para a localização (x,y)\n" +
+                            "5 - Informar doenca\n" +
+                            "6 - Logout\n" +
+                            "Escreva 'Sair' para encerrar o cliente\n") ;
                     recebido = dis.readUTF().split(":");
                     comando = recebido[0];
 
                     switch (comando){
                         case "1":
                             Localizacao localizacao = conta.getLocalizacao();
-                            dos.writeUTF("A sua localizacao atual é:" + localizacao.getLinha() + "," + localizacao.getColuna());
+                            dos.writeUTF("A sua localizacao atual é: (" + localizacao.getLinha() + "," + localizacao.getColuna() + ")");
                             break;
                         case "2":
                             int totalP = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             dos.writeUTF("Existem " + totalP + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
-                             break;
+                            break;
                         case "3":
                             int total = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
                             if(total > 0 ) {
@@ -124,7 +122,8 @@ public class CovidHandler implements Runnable {
                             break;
                         case "5":
                             covid.isInfetado(conta);
-                            saudavel = false;
+                            conta = null;
+                            entrou=false;
                             dos.writeUTF("Infetado");
                             break;
                         case "6":
@@ -132,27 +131,24 @@ public class CovidHandler implements Runnable {
                             entrou = false;
                             dos.writeUTF("done!");
                             break;
-                        case "7":
+                        /*case "7":
                             List<String> not = covid.notifica(conta.getNome());
                             if(not != null) dos.writeUTF(not.toString());
                             else dos.writeUTF("Não há notificações para o utilizador!");
+                            break;*/
+                        case "Sair":
+                            keepgoing=false;
+                            System.out.println("Cliente " + s + " encerrado!");
                             break;
                         default:
                             break;
                     }
                 }
-            } catch(IOException | InterruptedException e){
+            } catch(IOException e){
                 e.printStackTrace();
             }
 
         }
 
-        try {
-            this.dis.close();
-            this.dos.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

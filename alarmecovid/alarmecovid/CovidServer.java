@@ -1,6 +1,6 @@
 package alarmecovid;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -12,8 +12,6 @@ public class CovidServer {
         Contas[][] map = initMap(N);
         AlarmeCovid covid = new CovidImpl(map,N);
         ServerSocket ss = new ServerSocket(12345);
-
-
 
         while(true){
             Socket s = null;
@@ -30,9 +28,9 @@ public class CovidServer {
             catch (Exception e){
                 s.close();
                 e.printStackTrace();
-                }
             }
         }
+    }
 
     private static Contas[][] initMap(int n) {
         Contas[][] map = new Contas[n][n];

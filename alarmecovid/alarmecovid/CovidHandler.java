@@ -43,6 +43,8 @@ public class CovidHandler implements Runnable {
                 if (!entrou) {
                     if (recebido != null) clearArray(recebido);
                     dos.writeUTF("Pretende efetuar registo ou login?\n" +
+                            "registo:user:pass:linha:col (linha e coluna entre 0 e 10)\n" +
+                            "login:user:pass\n" +
                             "Escreva Sair para terminar a conexao.");
 
                     recebido = dis.readUTF().split(":");
@@ -50,7 +52,7 @@ public class CovidHandler implements Runnable {
 
                     switch (comando) {
                         case "registo":
-                            if(Integer.parseInt(recebido[3]) > N || Integer.parseInt(recebido[4]) > N){
+                            if(Integer.parseInt(recebido[3]) >= N || Integer.parseInt(recebido[4]) >= N || Integer.parseInt(recebido[3]) <0 || Integer.parseInt(recebido[4]) < 0 ){
                                 dos.writeUTF("Posição não existe no mapa");
                             }
                             else {
@@ -103,7 +105,7 @@ public class CovidHandler implements Runnable {
                             dos.writeUTF("A sua localizacao atual é: (" + localizacao.getLinha() + "," + localizacao.getColuna() + ")");
                             break;
                         case "2":
-                            if(Integer.parseInt(recebido[1]) > N || Integer.parseInt(recebido[2]) > N){
+                            if(Integer.parseInt(recebido[1]) >= N || Integer.parseInt(recebido[2]) >= N || Integer.parseInt(recebido[1]) <0 || Integer.parseInt(recebido[2]) < 0 ){
                                 dos.writeUTF("Posição não existe no mapa");
                             }
                             else {
@@ -112,7 +114,7 @@ public class CovidHandler implements Runnable {
                             }
                             break;
                         case "3":
-                            if(Integer.parseInt(recebido[1]) > N || Integer.parseInt(recebido[2]) > N){
+                            if(Integer.parseInt(recebido[1]) >= N || Integer.parseInt(recebido[2]) >= N || Integer.parseInt(recebido[1]) <0 || Integer.parseInt(recebido[2]) < 0 ){
                                 dos.writeUTF("Posição não existe no mapa");
                             }
                             else {
@@ -125,7 +127,7 @@ public class CovidHandler implements Runnable {
                             }
                             break;
                         case "4":
-                            if(Integer.parseInt(recebido[1]) > N || Integer.parseInt(recebido[2]) > N){
+                            if(Integer.parseInt(recebido[1]) >= N || Integer.parseInt(recebido[2]) >= N || Integer.parseInt(recebido[1]) <0 || Integer.parseInt(recebido[2]) < 0 ){
                                 dos.writeUTF("Posição não existe no mapa");
                             }
                             else{

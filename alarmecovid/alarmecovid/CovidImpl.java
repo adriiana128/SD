@@ -50,12 +50,12 @@ public class CovidImpl implements AlarmeCovid {
     }
 
     @Override
-    public Conta registo(String username, String password, Localizacao localizacao, boolean estadoSaude, List<String> contatos) {
+    public Conta registo(String username, String password, Localizacao localizacao, boolean estadoSaude) {
         try {
             lock.lock();
             Conta c = contas.getCliente(username);
             if (c == null) {
-                c = new Conta(username, password, localizacao,estadoSaude,contatos);
+                c = new Conta(username, password, localizacao,estadoSaude);
                 contas.addCliente(c);
                 map[localizacao.getLinha()][localizacao.getColuna()].addCliente(c);
                 return c;

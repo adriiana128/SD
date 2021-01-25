@@ -55,7 +55,7 @@ public class CovidHandler implements Runnable {
                             }
                             else {
                                 Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
-                                conta = covid.registo(recebido[1], recebido[2], localizacao, true, null);
+                                conta = covid.registo(recebido[1], recebido[2], localizacao, true);
                                 if (conta != null) {
                                     entrou = true;
                                     dos.writeUTF("Registo efetuado com sucesso!");

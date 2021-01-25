@@ -6,7 +6,7 @@ import java.util.List;
 public interface AlarmeCovid {
 
     Conta login(String username, String password);
-    Conta registo(String username, String password, Localizacao localizacao, boolean estadoSaude, List<String> contatos);
+    Conta registo(String username, String password, Localizacao localizacao, boolean estadoSaude);
     Contas getContas() throws IOException;
     int getNrPessoas(int linha, int col);
     void isInfetado(Conta c);

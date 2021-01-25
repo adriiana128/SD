@@ -8,7 +8,7 @@ public class Conta {
     private String password;
     private Localizacao localizacao;
     private boolean saudavel;
-    private List<String> contatos;
+
 
 
     Conta(){
@@ -16,15 +16,14 @@ public class Conta {
         password="";
         localizacao = new Localizacao();
         saudavel = true;
-        contatos = null;
     }
 
-    public Conta(String nome, String password,Localizacao localizacao,boolean estsaude, List<String> contatos) {
+    public Conta(String nome, String password,Localizacao localizacao,boolean estsaude) {
         this.nome = nome;
         this.password = password;
         this.localizacao = localizacao;
         this.saudavel = estsaude;
-        this.contatos = contatos;
+
     }
 
     public String getNome() {
@@ -58,7 +57,5 @@ public class Conta {
     public boolean getSaude(){
         return this.saudavel;
     }
-    public void setContatos(List<String> contatos) { this.contatos = contatos; }
 
-    public List<String> getContatos() { return contatos; }
 }

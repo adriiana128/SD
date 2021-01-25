@@ -50,13 +50,17 @@ public class CovidHandler implements Runnable {
 
                     switch (comando) {
                         case "registo":
-                            Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
-                            conta = covid.registo(recebido[1], recebido[2], localizacao,true, null);
-                            if(conta!= null) {
-                                entrou = true;
-                                dos.writeUTF("Registo efetuado com sucesso!");
+                            if(Integer.parseInt(recebido[3]) > N || Integer.parseInt(recebido[4]) > N){
+                                dos.writeUTF("Posição não existe no mapa");
                             }
-                            else dos.writeUTF("Utilizador já existe!");
+                            else {
+                                Localizacao localizacao = new Localizacao(Integer.parseInt(recebido[3]), Integer.parseInt(recebido[4]));
+                                conta = covid.registo(recebido[1], recebido[2], localizacao, true, null);
+                                if (conta != null) {
+                                    entrou = true;
+                                    dos.writeUTF("Registo efetuado com sucesso!");
+                                } else dos.writeUTF("Utilizador já existe!");
+                            }
                             break;
 
                         case "login":
@@ -99,17 +103,26 @@ public class CovidHandler implements Runnable {
                             dos.writeUTF("A sua localizacao atual é: (" + localizacao.getLinha() + "," + localizacao.getColuna() + ")");
                             break;
                         case "2":
-                            int totalP = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
-                            dos.writeUTF("Existem " + totalP + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
+                            if(Integer.parseInt(recebido[1]) > N || Integer.parseInt(recebido[2]) > N){
+                                dos.writeUTF("Posição não existe no mapa");
+                            }
+                            else {
+                                int totalP = covid.getNrPessoas(Integer.parseInt(recebido[1]), Integer.parseInt(recebido[2]));
+                                dos.writeUTF("Existem " + totalP + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
+                            }
                             break;
                         case "3":
-                            int total = covid.getNrPessoas(Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]));
-                            if(total > 0 ) {
-                                notificador = new Notificador(conta.getNome(),covid,Integer.parseInt(recebido[1]),Integer.parseInt(recebido[2]),dos);
-                                notificador.start();
-                                dos.writeUTF("Existem " + total + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
+                            if(Integer.parseInt(recebido[1]) > N || Integer.parseInt(recebido[2]) > N){
+                                dos.writeUTF("Posição não existe no mapa");
                             }
-                            else  dos.writeUTF("Posição (" + recebido[1] +"," + recebido[2] + ") está vazia!");
+                            else {
+                                int total = covid.getNrPessoas(Integer.parseInt(recebido[1]), Integer.parseInt(recebido[2]));
+                                if (total > 0) {
+                                    notificador = new Notificador(conta.getNome(), covid, Integer.parseInt(recebido[1]), Integer.parseInt(recebido[2]), dos);
+                                    notificador.start();
+                                    dos.writeUTF("Existem " + total + " pessoas nas coordenadas (" + recebido[1] + "," + recebido[2] + ") !");
+                                } else dos.writeUTF("Posição (" + recebido[1] + "," + recebido[2] + ") está vazia!");
+                            }
                             break;
                         case "4":
                             if(Integer.parseInt(recebido[1]) > N || Integer.parseInt(recebido[2]) > N){
@@ -131,11 +144,6 @@ public class CovidHandler implements Runnable {
                             entrou = false;
                             dos.writeUTF("done!");
                             break;
-                        /*case "7":
-                            List<String> not = covid.notifica(conta.getNome());
-                            if(not != null) dos.writeUTF(not.toString());
-                            else dos.writeUTF("Não há notificações para o utilizador!");
-                            break;*/
                         case "Sair":
                             keepgoing=false;
                             System.out.println("Cliente " + s + " encerrado!");

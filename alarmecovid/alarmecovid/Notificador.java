@@ -31,7 +31,6 @@ public class Notificador extends Thread {
                     covid.await();
                 }
                 dos.writeUTF("Posição (" + linha + "," + col + ") vazia!");
-                //covid.addNotificacoes(user,new Localizacao(linha,col));
                 ocupado = false;
 
             }

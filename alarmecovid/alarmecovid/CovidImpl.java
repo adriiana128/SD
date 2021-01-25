@@ -15,7 +15,6 @@ public class CovidImpl implements AlarmeCovid {
     private int N;
     private ReentrantLock lock = new ReentrantLock();
     private Condition cond= lock.newCondition();
-    private Map<String,List<Localizacao>> notificacoes = new HashMap<>();
 
 
 
@@ -96,7 +95,7 @@ public class CovidImpl implements AlarmeCovid {
             lock.unlock();
         }
     }
-    
+
 
     public void mudaPosicao(Conta c,int x,int y){
 

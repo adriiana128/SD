@@ -43,7 +43,7 @@ public class CovidHandler implements Runnable {
                 if (!entrou) {
                     if (recebido != null) clearArray(recebido);
                     dos.writeUTF("Pretende efetuar registo ou login?\n" +
-                            "registo:user:pass:linha:col (linha e coluna entre 0 e 10)\n" +
+                            "registo:user:pass:linha:col (linha e coluna entre 0 e 9)\n" +
                             "login:user:pass\n" +
                             "Escreva Sair para terminar a conexao.");
 
